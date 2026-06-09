@@ -5,560 +5,431 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KJ ORTHO 出勤申請</title>
 <style>
-  :root {
-    --navy: #1a2744;
-    --navy-light: #253560;
-    --accent: #4a9eff;
-    --accent-soft: #e8f2ff;
-    --green: #22c55e;
-    --green-soft: #dcfce7;
-    --red: #ef4444;
-    --red-soft: #fee2e2;
-    --gray-50: #f9fafb;
-    --gray-100: #f3f4f6;
-    --gray-200: #e5e7eb;
-    --gray-400: #9ca3af;
-    --gray-600: #4b5563;
-    --gray-800: #1f2937;
-    --white: #ffffff;
-    --radius: 12px;
-    --shadow: 0 2px 12px rgba(26,39,68,0.10);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
-    background: var(--gray-100);
-    color: var(--gray-800);
-    min-height: 100vh;
-    padding-bottom: 40px;
-  }
-  header {
-    background: var(--navy);
-    color: white;
-    padding: 18px 20px 16px;
-    text-align: center;
-  }
-  header h1 { font-size: 17px; font-weight: 700; letter-spacing: 0.05em; }
-  header p { font-size: 11px; opacity: 0.6; margin-top: 3px; }
-  .tabs {
-    display: flex;
-    background: var(--white);
-    border-bottom: 2px solid var(--gray-200);
-    position: sticky; top: 0; z-index: 10;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  }
-  .tab-btn {
-    flex: 1; padding: 14px 0;
-    background: none; border: none;
-    font-size: 13px; font-weight: 600;
-    color: var(--gray-400); cursor: pointer;
-    border-bottom: 3px solid transparent;
-    margin-bottom: -2px; transition: all 0.2s;
-  }
-  .tab-btn.active { color: var(--navy); border-bottom-color: var(--accent); }
-  .tab-content { display: none; padding-top: 20px; }
-  .tab-content.active { display: block; }
-  .container { max-width: 480px; margin: 0 auto; padding: 0 16px; }
-  .card {
-    background: var(--white);
-    border-radius: var(--radius);
-    padding: 20px; margin-bottom: 16px;
-    box-shadow: var(--shadow);
-  }
-  .card-title {
-    font-size: 13px; font-weight: 700;
-    color: var(--navy); margin-bottom: 14px;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .card-title::before {
-    content: ''; display: block;
-    width: 3px; height: 14px;
-    background: var(--accent); border-radius: 2px;
-  }
-  label {
-    display: block; font-size: 12px; font-weight: 600;
-    color: var(--gray-600); margin-bottom: 6px;
-  }
-  select, input[type="date"], input[type="time"], input[type="text"], textarea {
-    width: 100%; padding: 11px 14px;
-    border: 1.5px solid var(--gray-200);
-    border-radius: 8px; font-size: 14px;
-    font-family: inherit; color: var(--gray-800);
-    background: var(--white); transition: border-color 0.15s;
-    appearance: none;
-  }
-  select:focus, input:focus, textarea:focus {
-    outline: none; border-color: var(--accent);
-  }
-  .form-group { margin-bottom: 14px; }
-  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  textarea { resize: vertical; min-height: 70px; font-size: 13px; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+  background: #f3f4f6; color: #1f2937; min-height: 100vh; padding-bottom: 40px;
+}
+header {
+  background: #1a2744; color: white;
+  padding: 18px 20px 16px; text-align: center;
+}
+header h1 { font-size: 17px; font-weight: 700; }
+header p { font-size: 11px; opacity: 0.6; margin-top: 3px; }
+.user-badge {
+  background: rgba(255,255,255,0.15); border-radius: 20px;
+  padding: 4px 12px; font-size: 12px; margin-top: 8px;
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+}
+.tabs {
+  display: flex; background: white;
+  border-bottom: 2px solid #e5e7eb;
+  position: sticky; top: 0; z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.tab-btn {
+  flex: 1; padding: 14px 0; background: none; border: none;
+  font-size: 13px; font-weight: 600; color: #9ca3af;
+  cursor: pointer; border-bottom: 3px solid transparent;
+  margin-bottom: -2px; transition: all 0.2s; font-family: inherit;
+}
+.tab-btn.active { color: #1a2744; border-bottom-color: #4a9eff; }
+.container { max-width: 480px; margin: 0 auto; padding: 0 16px; }
+.tab-content { display: none; padding-top: 20px; }
+.tab-content.active { display: block; }
+.card {
+  background: white; border-radius: 12px;
+  padding: 20px; margin-bottom: 16px;
+  box-shadow: 0 2px 12px rgba(26,39,68,0.10);
+}
+.card-title {
+  font-size: 13px; font-weight: 700; color: #1a2744;
+  margin-bottom: 14px; display: flex; align-items: center; gap: 6px;
+}
+.card-title::before {
+  content: ''; display: block; width: 3px; height: 14px;
+  background: #4a9eff; border-radius: 2px;
+}
+label { display: block; font-size: 12px; font-weight: 600; color: #4b5563; margin-bottom: 6px; }
+select, input[type=date], input[type=time], input[type=number], textarea {
+  width: 100%; padding: 11px 14px; border: 1.5px solid #e5e7eb;
+  border-radius: 8px; font-size: 14px; font-family: inherit;
+  color: #1f2937; background: white; transition: border-color 0.15s; appearance: none;
+}
+select:focus, input:focus, textarea:focus { outline: none; border-color: #4a9eff; }
+.fg { margin-bottom: 14px; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+textarea { resize: vertical; min-height: 70px; font-size: 13px; }
+.entry-item {
+  border: 1.5px solid #e5e7eb; border-radius: 10px;
+  padding: 14px; margin-bottom: 10px;
+  background: #f9fafb; position: relative;
+}
+.entry-num { font-size: 11px; font-weight: 700; color: #4a9eff; margin-bottom: 8px; }
+.entry-del {
+  position: absolute; top: 8px; right: 8px;
+  background: none; border: none; color: #9ca3af;
+  cursor: pointer; font-size: 18px; padding: 2px 5px;
+  border-radius: 4px; font-family: inherit;
+}
+.entry-del:hover { color: #ef4444; background: #fee2e2; }
+.btn-add {
+  width: 100%; padding: 12px; background: #e8f2ff; color: #4a9eff;
+  border: 1.5px dashed #4a9eff; border-radius: 10px;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  font-family: inherit; margin-top: 4px;
+}
+.btn {
+  width: 100%; padding: 14px; border: none; border-radius: 10px;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  transition: all 0.15s; font-family: inherit;
+}
+.btn-primary { background: #1a2744; color: white; }
+.btn-primary:disabled { background: #e5e7eb; color: #9ca3af; cursor: not-allowed; }
+.msg { padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; margin-bottom: 14px; display: none; }
+.msg.ok { background: #dcfce7; color: #166534; display: block; }
+.msg.err { background: #fee2e2; color: #991b1b; display: block; }
+.hist-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f3f4f6; }
+.hist-item:last-child { border-bottom: none; }
+.hist-date {
+  min-width: 46px; background: #1a2744; color: white;
+  border-radius: 8px; padding: 6px 4px; text-align: center;
+  font-size: 14px; font-weight: 700; line-height: 1;
+}
+.hist-date span { display: block; font-size: 9px; font-weight: 400; opacity: 0.7; margin-bottom: 2px; }
+.hist-clinic { font-size: 13px; font-weight: 700; }
+.hist-time { font-size: 11px; color: #9ca3af; }
+.hist-edit {
+  background: none; border: 1px solid #e5e7eb; border-radius: 6px;
+  padding: 4px 8px; font-size: 11px; cursor: pointer;
+  color: #4b5563; font-family: inherit; white-space: nowrap;
+}
+.hist-edit:hover { background: #e8f2ff; color: #4a9eff; border-color: #4a9eff; }
+.exp-box { background: #f9fafb; border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #4b5563; margin-top: 8px; }
+.badge { display: inline-block; background: #1a2744; color: white; font-size: 10px; padding: 2px 8px; border-radius: 20px; margin-bottom: 12px; font-weight: 600; }
+.cnt-badge { background: #e8f2ff; color: #4a9eff; padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.loading { text-align: center; padding: 20px; color: #9ca3af; font-size: 13px; }
+.empty { text-align: center; color: #9ca3af; font-size: 13px; padding: 24px 0; }
 
-  /* 出勤エントリー */
-  .entry-list { display: flex; flex-direction: column; gap: 12px; }
-  .entry-item {
-    border: 1.5px solid var(--gray-200);
-    border-radius: 10px; padding: 14px;
-    position: relative; background: var(--gray-50);
-  }
-  .entry-num {
-    font-size: 11px; font-weight: 700;
-    color: var(--accent); margin-bottom: 10px;
-    letter-spacing: 0.05em;
-  }
-  .entry-delete {
-    position: absolute; top: 10px; right: 10px;
-    background: none; border: none;
-    color: var(--gray-400); cursor: pointer;
-    font-size: 18px; line-height: 1;
-    padding: 2px 6px; border-radius: 4px;
-  }
-  .entry-delete:hover { color: var(--red); background: var(--red-soft); }
-
-  .btn-add {
-    width: 100%; padding: 12px;
-    background: var(--accent-soft);
-    color: var(--accent);
-    border: 1.5px dashed var(--accent);
-    border-radius: 10px;
-    font-size: 14px; font-weight: 700;
-    cursor: pointer; font-family: inherit;
-    transition: all 0.15s; margin-top: 4px;
-  }
-  .btn-add:hover { background: #d1e8ff; }
-
-  .btn {
-    width: 100%; padding: 14px; border: none;
-    border-radius: 10px; font-size: 15px;
-    font-weight: 700; cursor: pointer;
-    transition: all 0.15s; font-family: inherit;
-  }
-  .btn-primary { background: var(--navy); color: white; }
-  .btn-primary:hover { background: var(--navy-light); }
-  .btn-primary:active { transform: scale(0.98); }
-  .btn-primary:disabled {
-    background: var(--gray-200); color: var(--gray-400); cursor: not-allowed;
-  }
-  .status-msg {
-    padding: 12px 16px; border-radius: 8px;
-    font-size: 13px; font-weight: 600;
-    margin-bottom: 14px; display: none;
-  }
-  .status-msg.success { background: var(--green-soft); color: #166534; display: block; }
-  .status-msg.error { background: var(--red-soft); color: #991b1b; display: block; }
-
-  /* 履歴 */
-  .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-  .history-count {
-    background: var(--accent-soft); color: var(--accent);
-    padding: 4px 10px; border-radius: 20px;
-    font-size: 12px; font-weight: 700;
-  }
-  .history-empty { text-align: center; color: var(--gray-400); font-size: 13px; padding: 30px 0; }
-  .history-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 12px 0; border-bottom: 1px solid var(--gray-100);
-  }
-  .history-item:last-child { border-bottom: none; }
-  .history-date {
-    min-width: 52px; background: var(--navy);
-    color: white; border-radius: 8px;
-    padding: 8px 6px; text-align: center;
-    font-size: 15px; font-weight: 700; line-height: 1;
-  }
-  .history-date span { display: block; font-size: 10px; font-weight: 400; opacity: 0.7; margin-bottom: 2px; }
-  .history-info { flex: 1; }
-  .history-clinic { font-size: 13px; font-weight: 700; color: var(--gray-800); margin-bottom: 3px; }
-  .history-time { font-size: 11px; color: var(--gray-400); }
-  .history-check { color: var(--green); font-size: 18px; }
-  .expense-display {
-    background: var(--gray-50); border-radius: 8px;
-    padding: 10px 14px; font-size: 13px; color: var(--gray-600); margin-top: 8px;
-  }
-  .expense-display strong { color: var(--gray-800); }
-  .loading { text-align: center; padding: 20px; color: var(--gray-400); font-size: 13px; }
-  .spinner {
-    display: inline-block; width: 20px; height: 20px;
-    border: 2px solid var(--gray-200); border-top-color: var(--accent);
-    border-radius: 50%; animation: spin 0.7s linear infinite;
-    vertical-align: middle; margin-right: 8px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .month-badge {
-    display: inline-block; background: var(--navy); color: white;
-    font-size: 11px; padding: 3px 10px; border-radius: 20px;
-    margin-bottom: 16px; font-weight: 600; letter-spacing: 0.05em;
-  }
+/* ログイン画面 */
+#login-screen {
+  min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; padding: 20px;
+}
+.login-card {
+  background: white; border-radius: 16px; padding: 32px 24px;
+  width: 100%; max-width: 360px;
+  box-shadow: 0 4px 24px rgba(26,39,68,0.12);
+}
+.login-logo { text-align: center; margin-bottom: 24px; }
+.login-logo h1 { font-size: 20px; font-weight: 700; color: #1a2744; }
+.login-logo p { font-size: 12px; color: #9ca3af; margin-top: 4px; }
+#app-screen { display: none; }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>🦷 KJ ORTHO 出勤申請</h1>
-  <p>1件ずつでも、まとめても送れます</p>
-</header>
-
-<div class="tabs">
-  <button class="tab-btn active" onclick="switchTab('submit')">📝 出勤を申請</button>
-  <button class="tab-btn" onclick="switchTab('history')">📋 送信履歴</button>
+<!-- ログイン画面 -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <h1>🦷 KJ ORTHO</h1>
+      <p>出勤申請システム</p>
+    </div>
+    <div class="fg">
+      <label>名前を選択してください</label>
+      <select id="login-name">
+        <option value="">選択してください</option>
+        <option>疋田拓史</option><option>森泉瑛加</option><option>岩根健大</option>
+        <option>髙木豪馬</option><option>塚田美智子</option><option>千葉大輝</option>
+        <option>小山晴香</option><option>疋田耀子</option><option>佐藤理沙</option>
+        <option>村井陽乃</option><option>中田凱</option><option>谷口玲華</option>
+        <option>武笠脩哉</option><option>野崎敦</option><option>小坂尚子</option>
+        <option>内田雄大</option><option>新里大基</option><option>山田彩加</option>
+        <option>御代田莉沙</option><option>長崎司</option><option>笹原梨羅</option>
+        <option>中村沙姫</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" onclick="login()">はじめる</button>
+  </div>
 </div>
 
-<div class="container">
-
-  <!-- 申請タブ -->
-  <div id="tab-submit" class="tab-content active">
-
-    <div class="card">
-      <div class="card-title">基本情報</div>
-      <div class="form-group">
-        <label>氏名</label>
-        <select id="name" onchange="onInfoChange()">
-          <option value="">選択してください</option>
-          <option>疋田拓史</option><option>森泉瑛加</option><option>岩根健大</option>
-          <option>髙木豪馬</option><option>塚田美智子</option><option>千葉大輝</option>
-          <option>小山晴香</option><option>疋田耀子</option><option>佐藤理沙</option>
-          <option>村井陽乃</option><option>中田凱</option><option>谷口玲華</option>
-          <option>武笠脩哉</option><option>野崎敦</option><option>小坂尚子</option>
-          <option>内田雄大</option><option>新里大基</option><option>山田彩加</option>
-          <option>御代田莉沙</option><option>長崎司</option><option>笹原梨羅</option>
-          <option>中村沙姫</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>対象月</label>
-        <select id="month" onchange="onInfoChange()">
-          <option value="">選択してください</option>
-        </select>
-      </div>
+<!-- メイン画面 -->
+<div id="app-screen">
+  <header>
+    <h1>🦷 KJ ORTHO 出勤申請</h1>
+    <div class="user-badge" onclick="logout()">
+      <span id="header-name"></span>
+      <span style="opacity:0.6;font-size:10px">▼ 変更</span>
     </div>
+  </header>
 
-    <div class="card">
-      <div class="card-title">出勤日程</div>
-      <div class="entry-list" id="entry-list"></div>
-      <button class="btn-add" onclick="addEntry()" style="margin-top:12px">＋ 出勤日を追加</button>
-    </div>
-
-    <div class="card">
-      <div class="card-title">経費（任意）</div>
-      <div class="form-group">
-        <label>食事代・交通費など</label>
-        <textarea id="expense" placeholder="例：食事代2000円、交通費1500円"></textarea>
-      </div>
-    </div>
-
-    <div id="status-msg" class="status-msg"></div>
-    <button id="submit-btn" class="btn btn-primary" onclick="submitForm()" disabled>送信する</button>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="sw('submit')">📝 出勤を申請</button>
+    <button class="tab-btn" onclick="sw('history')">📋 送信履歴</button>
   </div>
 
-  <!-- 履歴タブ -->
-  <div id="tab-history" class="tab-content">
-    <div class="card">
-      <div class="card-title">確認する月を選択</div>
-      <div class="form-group">
-        <label>氏名</label>
-        <select id="hist-name" onchange="loadHistory()">
-          <option value="">選択してください</option>
-          <option>疋田拓史</option><option>森泉瑛加</option><option>岩根健大</option>
-          <option>髙木豪馬</option><option>塚田美智子</option><option>千葉大輝</option>
-          <option>小山晴香</option><option>疋田耀子</option><option>佐藤理沙</option>
-          <option>村井陽乃</option><option>中田凱</option><option>谷口玲華</option>
-          <option>武笠脩哉</option><option>野崎敦</option><option>小坂尚子</option>
-          <option>内田雄大</option><option>新里大基</option><option>山田彩加</option>
-          <option>御代田莉沙</option><option>長崎司</option><option>笹原梨羅</option>
-          <option>中村沙姫</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>対象月</label>
-        <select id="hist-month" onchange="loadHistory()">
-          <option value="">選択してください</option>
-        </select>
-      </div>
-    </div>
-    <div id="history-result"></div>
-  </div>
+  <div class="container">
 
+    <!-- 申請タブ -->
+    <div id="tab-submit" class="tab-content active">
+      <div class="card">
+        <div class="card-title">対象月</div>
+        <div class="fg">
+          <select id="month" onchange="chk()"></select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">出勤日程</div>
+        <div id="entry-list"></div>
+        <button class="btn-add" onclick="addEntry()">＋ 出勤日を追加</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">経費（任意）</div>
+        <div class="fg">
+          <label>食事代・交通費など</label>
+          <textarea id="expense" placeholder="例：食事代2000円、交通費1500円"></textarea>
+        </div>
+      </div>
+
+      <div id="smsg" class="msg"></div>
+      <button id="sbtn" class="btn btn-primary" onclick="doSubmit()" disabled>送信する</button>
+    </div>
+
+    <!-- 履歴タブ -->
+    <div id="tab-history" class="tab-content">
+      <div class="card">
+        <div class="card-title">対象月</div>
+        <div class="fg"><select id="hmonth" onchange="loadHist()"></select></div>
+      </div>
+      <div id="hist-result"></div>
+    </div>
+
+  </div>
 </div>
 
 <script>
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbw5tvgBT35-laURQL_P5cfYARBR_VAfxtWfB189gWNnKMtq3FsvjoE7fMK2Ur2ByQ7f/exec';
+const GAS = 'https://script.google.com/macros/s/AKfycbw5tvgBT35-laURQL_P5cfYARBR_VAfxtWfB189gWNnKMtq3FsvjoE7fMK2Ur2ByQ7f/exec';
+const CLINICS = ['印西歯科クリニック','三郷中央歯科（水）','三郷中央歯科（土）','MI総合歯科クリニック','サプラファミリー歯科','ノア歯科クリニック中目黒','ピースフル歯科クリニック','テラスモール松戸プランス歯科','駅前おひさま歯科+キッズ','泉歯科医院'];
+let MY_NAME = '';
+let ec = 0;
+let isEditMode = false;
 
-const CLINICS = [
-  '印西歯科クリニック','三郷中央歯科（水）','三郷中央歯科（土）',
-  'MI総合歯科クリニック','サプラファミリー歯科','ノア歯科クリニック中目黒',
-  'ピースフル歯科クリニック','テラスモール松戸プランス歯科',
-  '駅前おひさま歯科+キッズ','泉歯科医院'
-];
-
-let entryCount = 0;
-
-function buildMonthOptions() {
-  const now = new Date();
-  const months = [];
-  for (let i = -3; i <= 6; i++) {
-    const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
-    months.push(`${d.getFullYear()}年${d.getMonth()+1}月`);
-  }
-  return months;
+function login() {
+  const n = document.getElementById('login-name').value;
+  if (!n) { alert('名前を選択してください'); return; }
+  MY_NAME = n;
+  document.getElementById('header-name').textContent = n;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'block';
+  initMonths();
+  addEntry();
+  chk();
 }
 
-function populateMonths() {
-  const months = buildMonthOptions();
+function logout() {
+  if (!confirm('名前を変更しますか？')) return;
+  MY_NAME = '';
+  document.getElementById('entry-list').innerHTML = '';
+  ec = 0;
+  document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+function initMonths() {
   const now = new Date();
-  const currentMonth = `${now.getFullYear()}年${now.getMonth()+1}月`;
-  ['month','hist-month'].forEach(id => {
-    const sel = document.getElementById(id);
-    months.forEach(m => {
-      const opt = document.createElement('option');
-      opt.value = m; opt.textContent = m;
-      if (m === currentMonth) opt.selected = true;
-      sel.appendChild(opt);
-    });
+  const cur = `${now.getFullYear()}年${now.getMonth()+1}月`;
+  ['month','hmonth'].forEach(id => {
+    const s = document.getElementById(id);
+    s.innerHTML = '';
+    for (let i = -3; i <= 6; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth()+i, 1);
+      const v = `${d.getFullYear()}年${d.getMonth()+1}月`;
+      const o = document.createElement('option');
+      o.value = o.textContent = v;
+      if (v === cur) o.selected = true;
+      s.appendChild(o);
+    }
   });
 }
 
 function addEntry() {
-  entryCount++;
-  const id = entryCount;
+  ec++;
+  const id = ec;
   const today = new Date();
-  const dateVal = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-
-  const clinicOptions = CLINICS.map(c => `<option>${c}</option>`).join('');
-
-  const html = `<div class="entry-item" id="entry-${id}">
-    <div class="entry-num">出勤 ${id}</div>
-    <button class="entry-delete" onclick="removeEntry(${id})" title="削除">×</button>
-    <div class="form-group">
-      <label>出勤日</label>
-      <input type="date" id="date-${id}" value="${dateVal}">
-    </div>
-    <div class="form-group">
-      <label>歯科医院</label>
-      <select id="clinic-${id}">
-        <option value="">選択してください</option>
-        ${clinicOptions}
-      </select>
-    </div>
-    <div class="form-group">
-      <div class="row-2">
-        <div>
-          <label>出勤時間</label>
-          <input type="time" id="start-${id}" onchange="calcWork(${id})">
-        </div>
-        <div>
-          <label>退勤時間</label>
-          <input type="time" id="end-${id}" onchange="calcWork(${id})">
-        </div>
-      </div>
-    </div>
-    <div class="form-group">
-      <div class="row-2">
-        <div>
-          <label>休憩（分）</label>
-          <input type="number" id="break-${id}" value="0" min="0" step="15" onchange="calcWork(${id})" style="padding:9px 12px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:13px;width:100%;font-family:inherit;color:var(--color-text-primary);background:var(--color-background-primary)">
-        </div>
-        <div>
-          <label>実働時間</label>
-          <div id="work-${id}" style="padding:9px 12px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);font-size:13px;background:var(--color-background-secondary);color:var(--color-text-secondary);min-height:38px;display:flex;align-items:center">—</div>
-        </div>
-      </div>
-    </div>
-  </div>`;
-
-  document.getElementById('entry-list').insertAdjacentHTML('beforeend', html);
-  renumberEntries();
+  const dv = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+  const opts = CLINICS.map(c => `<option>${c}</option>`).join('');
+  document.getElementById('entry-list').insertAdjacentHTML('beforeend', `
+    <div class="entry-item" id="ei-${id}">
+      <div class="entry-num">出勤 ${id}</div>
+      <button class="entry-del" onclick="delEntry(${id})">×</button>
+      <div class="fg"><label>出勤日</label><input type="date" id="d-${id}" value="${dv}"></div>
+      <div class="fg"><label>歯科医院</label><select id="c-${id}"><option value="">選択してください</option>${opts}</select></div>
+      <div class="fg"><div class="row2">
+        <div><label>出勤時間</label><input type="time" id="s-${id}" onchange="calcWork(${id})"></div>
+        <div><label>退勤時間</label><input type="time" id="e-${id}" onchange="calcWork(${id})"></div>
+      </div></div>
+      <div class="fg"><div class="row2">
+        <div><label>休憩（分）</label><input type="number" id="b-${id}" value="0" min="0" step="15" onchange="calcWork(${id})"></div>
+        <div><label>実働時間</label><div id="w-${id}" style="padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;background:#f9fafb;color:#9ca3af;min-height:42px;display:flex;align-items:center">—</div></div>
+      </div></div>
+    </div>`);
+  renum();
 }
 
+function delEntry(id) { const el = document.getElementById(`ei-${id}`); if(el) el.remove(); renum(); }
+function renum() { document.querySelectorAll('.entry-item').forEach((el,i) => el.querySelector('.entry-num').textContent = `出勤 ${i+1}`); }
+
 function calcWork(id) {
-  const s = document.getElementById(`start-${id}`).value;
-  const e = document.getElementById(`end-${id}`).value;
-  const b = parseInt(document.getElementById(`break-${id}`).value) || 0;
-  const el = document.getElementById(`work-${id}`);
+  const s = document.getElementById(`s-${id}`).value;
+  const e = document.getElementById(`e-${id}`).value;
+  const b = parseInt(document.getElementById(`b-${id}`).value) || 0;
+  const el = document.getElementById(`w-${id}`);
   if (!s || !e) { el.textContent = '—'; return; }
   const [sh,sm] = s.split(':').map(Number);
   const [eh,em] = e.split(':').map(Number);
-  let mins = (eh*60+em) - (sh*60+sm) - b;
-  if (mins <= 0) { el.textContent = '—'; el.style.color = 'var(--color-text-secondary)'; return; }
+  const mins = (eh*60+em) - (sh*60+sm) - b;
+  if (mins <= 0) { el.textContent = '—'; el.style.color = '#9ca3af'; return; }
   const h = Math.floor(mins/60), m = mins%60;
   el.textContent = m > 0 ? `${h}時間${m}分` : `${h}時間`;
-  el.style.color = 'var(--navy)';
+  el.style.color = '#1a2744';
 }
 
-function removeEntry(id) {
-  const el = document.getElementById(`entry-${id}`);
-  if (el) el.remove();
-  renumberEntries();
-}
-
-function renumberEntries() {
-  const items = document.querySelectorAll('.entry-item');
-  items.forEach((item, i) => {
-    item.querySelector('.entry-num').textContent = `出勤 ${i+1}`;
-  });
-}
-
-function onInfoChange() {
-  const name = document.getElementById('name').value;
+function chk() {
   const month = document.getElementById('month').value;
-  document.getElementById('submit-btn').disabled = !(name && month);
+  document.getElementById('sbtn').disabled = !month;
 }
 
-function switchTab(tab) {
-  document.querySelectorAll('.tab-btn').forEach((b,i) => {
-    b.classList.toggle('active', (i===0&&tab==='submit')||(i===1&&tab==='history'));
-  });
+function sw(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (i===0&&tab==='submit')||(i===1&&tab==='history')));
   document.getElementById('tab-submit').classList.toggle('active', tab==='submit');
   document.getElementById('tab-history').classList.toggle('active', tab==='history');
-  if (tab === 'history') loadHistory();
+  if (tab === 'history') loadHist();
 }
 
-async function submitForm() {
-  const name = document.getElementById('name').value;
+function showMsg(txt, type) {
+  const el = document.getElementById('smsg');
+  el.textContent = txt; el.className = `msg ${type}`;
+  setTimeout(() => el.className = 'msg', 6000);
+}
+
+async function doSubmit() {
   const month = document.getElementById('month').value;
   const expense = document.getElementById('expense').value.trim();
-
-  if (!name || !month) { showStatus('氏名と対象月を選択してください', 'error'); return; }
-
   const items = document.querySelectorAll('.entry-item');
-  if (items.length === 0) { showStatus('出勤日を1件以上追加してください', 'error'); return; }
+
+  if (!items.length && !expense) { showMsg('出勤日か経費を入力してください', 'err'); return; }
 
   const entries = [];
+  const seenDates = new Set();
   for (const item of items) {
-    const idMatch = item.id.match(/entry-(\d+)/);
-    const id = idMatch[1];
-    const date = document.getElementById(`date-${id}`).value;
-    const clinic = document.getElementById(`clinic-${id}`).value;
-    const startTime = document.getElementById(`start-${id}`).value;
-    const endTime = document.getElementById(`end-${id}`).value;
-    if (!date || !clinic) { showStatus('全ての出勤日に日付と歯科医院を入力してください', 'error'); return; }
+    const id = item.id.match(/ei-(\d+)/)[1];
+    const date = document.getElementById(`d-${id}`).value;
+    const clinic = document.getElementById(`c-${id}`).value;
+    if (!date) { showMsg('出勤日が入力されていない項目があります', 'err'); return; }
+    if (!clinic) { showMsg('歯科医院が選択されていない項目があります', 'err'); return; }
     const d = new Date(date);
-    const dateFormatted = `${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    entries.push({ date: dateFormatted, clinic, startTime, endTime });
+    const fmt = `${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    if (!isEditMode && seenDates.has(fmt)) { showMsg(`⚠️ ${fmt} が重複しています`, 'err'); return; }
+    seenDates.add(fmt);
+    const st = document.getElementById(`s-${id}`).value;
+    const et = document.getElementById(`e-${id}`).value;
+    const bk = parseInt(document.getElementById(`b-${id}`).value) || 0;
+    let wt = '';
+    if (st && et) {
+      const [sh,sm] = st.split(':').map(Number);
+      const [eh,em] = et.split(':').map(Number);
+      const mins = (eh*60+em)-(sh*60+sm)-bk;
+      if (mins > 0) { const h=Math.floor(mins/60),m=mins%60; wt = m>0?`${h}時間${m}分`:`${h}時間`; }
+    }
+    entries.push({ date: fmt, clinic, startTime: st, endTime: et, breakMins: bk, workTime: wt });
   }
 
-  const btn = document.getElementById('submit-btn');
-  btn.disabled = true;
-  btn.textContent = '送信中…';
+  const btn = document.getElementById('sbtn');
+  btn.disabled = true; btn.textContent = '送信中…';
 
   try {
-    const res = await fetch(GAS_URL, {
+    const res = await fetch(GAS, {
       method: 'POST',
-      body: JSON.stringify({ action: 'submitMulti', name, month, entries, expense, isEdit: document.getElementById('sbtn').dataset.isEdit === 'true' })
+      body: JSON.stringify({ action: 'submitMulti', name: MY_NAME, month, entries, expense, isEdit: isEditMode })
     });
     const json = await res.json();
     if (json.success) {
-      showStatus(`✅ 送信完了！${entries.length}件の出勤を記録しました`, 'success');
+      showMsg(`✅ ${isEditMode ? '修正' : '送信'}完了！`, 'ok');
       document.getElementById('expense').value = '';
       document.getElementById('entry-list').innerHTML = '';
-      entryCount = 0;
+      ec = 0; isEditMode = false;
+      addEntry();
     } else {
-      showStatus('送信に失敗しました: ' + (json.error || '不明なエラー'), 'error');
+      showMsg('エラー: ' + (json.error || '不明'), 'err');
     }
-  } catch(e) {
-    showStatus('通信エラーが発生しました。再度お試しください。', 'error');
+  } catch(err) {
+    showMsg('通信エラーが発生しました', 'err');
   }
-
-  btn.disabled = false;
-  btn.textContent = '送信する';
-  onInfoChange();
+  btn.disabled = false; btn.textContent = '送信する'; chk();
 }
 
-async function loadHistory() {
-  const name = document.getElementById('hist-name').value;
-  const month = document.getElementById('hist-month').value;
-  if (!name || !month) return;
-
-  const el = document.getElementById('history-result');
-  el.innerHTML = '<div class="loading"><span class="spinner"></span>読み込み中…</div>';
-
+async function loadHist() {
+  const month = document.getElementById('hmonth').value;
+  if (!month) return;
+  const el = document.getElementById('hist-result');
+  el.innerHTML = '<div class="loading">読み込み中…</div>';
   try {
-    const url = `${GAS_URL}?action=getHistory&name=${encodeURIComponent(name)}&month=${encodeURIComponent(month)}`;
-    const res = await fetch(url);
+    const res = await fetch(`${GAS}?action=getHistory&name=${encodeURIComponent(MY_NAME)}&month=${encodeURIComponent(month)}`);
     const json = await res.json();
-    renderHistory(json.history, json.expense, month);
+    renderHist(json.history, json.expense, month);
   } catch(e) {
-    el.innerHTML = '<div class="card"><p style="color:#9ca3af;font-size:13px">読み込みに失敗しました</p></div>';
+    el.innerHTML = '<div class="card"><p class="empty">読み込みに失敗しました</p></div>';
   }
 }
 
-function renderHistory(history, expense, month) {
-  const el = document.getElementById('history-result');
-  if (!history || history.length === 0) {
-    el.innerHTML = `<div class="card"><p class="history-empty">📭 ${month}の記録はまだありません</p></div>`;
+function renderHist(history, expense, month) {
+  const el = document.getElementById('hist-result');
+  if (!history || !history.length) {
+    el.innerHTML = `<div class="card"><p class="empty">📭 ${month}の記録はまだありません</p></div>`;
     return;
   }
   const sorted = [...history].sort((a,b) => a.date.localeCompare(b.date));
-  let html = `<div class="card">
-    <div class="history-header">
-      <span class="month-badge">${month}</span>
-      <span class="history-count">${sorted.length}回出勤</span>
-    </div>`;
+  let html = `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span class="badge">${month}</span><span class="cnt-badge">${sorted.length}回出勤</span></div>`;
   sorted.forEach(item => {
-    const parts = item.date.split('-');
-    const dayNum = parts[1] ? parseInt(parts[1]) : '?';
-    const monthNum = parts[0] ? parseInt(parts[0]) : '';
-    const timeStr = (item.startTime && item.endTime)
-      ? `${item.startTime} 〜 ${item.endTime}`
-      : item.startTime ? `${item.startTime}〜` : '';
-    html += `<div class="history-item">
-      <div class="history-date"><span>${monthNum}月</span>${dayNum}</div>
-      <div class="history-info">
-        <div class="history-clinic">${item.clinic}</div>
-        ${timeStr ? `<div class="history-time">⏰ ${timeStr}</div>` : ''}
+    const p = item.date.split('-');
+    const t = (item.startTime && item.endTime) ? `${item.startTime} 〜 ${item.endTime}` : item.startTime ? `${item.startTime}〜` : '';
+    html += `<div class="hist-item">
+      <div class="hist-date"><span>${parseInt(p[0])}月</span>${parseInt(p[1])}</div>
+      <div style="flex:1">
+        <div class="hist-clinic">${item.clinic}</div>
+        ${t ? `<div class="hist-time">⏰ ${t}</div>` : ''}
       </div>
-      <div class="history-check">✓</div>
+      <button class="hist-edit" onclick="startEdit('${item.date}','${item.clinic}','${item.startTime||''}','${item.endTime||''}')">修正</button>
     </div>`;
   });
-  if (expense) {
-    html += `<div class="expense-display">💴 経費：<strong>${expense}</strong></div>`;
-  }
+  if (expense) html += `<div class="exp-box">💴 経費：<strong>${expense}</strong></div>`;
   html += '</div>';
   el.innerHTML = html;
 }
 
-function editEntry(date, clinic, startTime, endTime) {
-  // 申請タブに切り替え
+function startEdit(date, clinic, startTime, endTime) {
+  const month = document.getElementById('hmonth').value;
+  document.getElementById('month').value = month;
+  isEditMode = true;
   sw('submit');
-  // 既存エントリをクリア
   document.getElementById('entry-list').innerHTML = '';
   ec = 0;
-  // 履歴タブで選択中の名前・月を申請タブにセット
-  const hname = document.getElementById('hname').value;
-  const hmonth = document.getElementById('hmonth').value;
-  if (hname) document.getElementById('name').value = hname;
-  if (hmonth) document.getElementById('month').value = hmonth;
-  chk();
-  // エントリを追加して値をセット
   addEntry();
   const id = ec;
-  // 日付をYYYY-MM-DD形式に変換
   const now = new Date();
-  const year = now.getFullYear();
   const [m, d] = date.split('-');
-  document.getElementById(`date-${id}`).value = `${year}-${m}-${d}`;
-  // クリニックをセット
-  const clinicSel = document.getElementById(`clinic-${id}`);
-  for (let i = 0; i < clinicSel.options.length; i++) {
-    if (clinicSel.options[i].value === clinic) { clinicSel.selectedIndex = i; break; }
-  }
-  if (startTime) document.getElementById(`start-${id}`).value = startTime;
-  if (endTime) document.getElementById(`end-${id}`).value = endTime;
+  document.getElementById(`d-${id}`).value = `${now.getFullYear()}-${m}-${d}`;
+  const cs = document.getElementById(`c-${id}`);
+  for (let i = 0; i < cs.options.length; i++) { if (cs.options[i].value === clinic) { cs.selectedIndex = i; break; } }
+  if (startTime) document.getElementById(`s-${id}`).value = startTime;
+  if (endTime) document.getElementById(`e-${id}`).value = endTime;
   if (startTime || endTime) calcWork(id);
-  // 修正フラグをセット
-  document.getElementById('sbtn').dataset.isEdit = 'true';
-  showStatus('⚠️ 修正モード：内容を変更して送信してください', 'ok');
+  showMsg('✏️ 修正モード：内容を変えて送信してください', 'ok');
+  chk();
 }
-
-function showStatus(msg, type) {
-  const el = document.getElementById('status-msg');
-  el.textContent = msg;
-  el.className = `status-msg ${type}`;
-  setTimeout(() => { el.className = 'status-msg'; }, 5000);
-}
-
-// 初期化
-populateMonths();
-addEntry(); // 最初から1件表示
 </script>
 </body>
 </html>
