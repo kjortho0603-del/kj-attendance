@@ -443,7 +443,7 @@ async function submitForm() {
   try {
     const res = await fetch(GAS_URL, {
       method: 'POST',
-      body: JSON.stringify({ action: 'submitMulti', name, month, entries, expense })
+      body: JSON.stringify({ action: 'submitMulti', name, month, entries, expense, isEdit: document.getElementById('sbtn').dataset.isEdit === 'true' })
     });
     const json = await res.json();
     if (json.success) {
@@ -514,6 +514,39 @@ function renderHistory(history, expense, month) {
   }
   html += '</div>';
   el.innerHTML = html;
+}
+
+function editEntry(date, clinic, startTime, endTime) {
+  // 申請タブに切り替え
+  sw('submit');
+  // 既存エントリをクリア
+  document.getElementById('entry-list').innerHTML = '';
+  ec = 0;
+  // 履歴タブで選択中の名前・月を申請タブにセット
+  const hname = document.getElementById('hname').value;
+  const hmonth = document.getElementById('hmonth').value;
+  if (hname) document.getElementById('name').value = hname;
+  if (hmonth) document.getElementById('month').value = hmonth;
+  chk();
+  // エントリを追加して値をセット
+  addEntry();
+  const id = ec;
+  // 日付をYYYY-MM-DD形式に変換
+  const now = new Date();
+  const year = now.getFullYear();
+  const [m, d] = date.split('-');
+  document.getElementById(`date-${id}`).value = `${year}-${m}-${d}`;
+  // クリニックをセット
+  const clinicSel = document.getElementById(`clinic-${id}`);
+  for (let i = 0; i < clinicSel.options.length; i++) {
+    if (clinicSel.options[i].value === clinic) { clinicSel.selectedIndex = i; break; }
+  }
+  if (startTime) document.getElementById(`start-${id}`).value = startTime;
+  if (endTime) document.getElementById(`end-${id}`).value = endTime;
+  if (startTime || endTime) calcWork(id);
+  // 修正フラグをセット
+  document.getElementById('sbtn').dataset.isEdit = 'true';
+  showStatus('⚠️ 修正モード：内容を変更して送信してください', 'ok');
 }
 
 function showStatus(msg, type) {
