@@ -307,14 +307,49 @@ function showMsg(txt, type) {
 
 let receiptFiles = [];
 
+function compressImage(dataUrl, maxWidth, quality, callback) {
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    let w = img.width, h = img.height;
+    if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    callback(canvas.toDataURL('image/jpeg', quality));
+  };
+  img.src = dataUrl;
+}
+
+function compressImage(file, maxWidth, quality) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        const compressed = canvas.toDataURL('image/jpeg', quality);
+        resolve({ base64: compressed.split(',')[1], mime: 'image/jpeg', dataUrl: compressed });
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 function addReceiptFromInput(inputId) {
   const files = document.getElementById(inputId).files;
   if (!files.length) return;
   Array.from(files).forEach(file => {
   const reader = new FileReader();
   reader.onload = (e) => {
+    // 画像を圧縮（最大幅1200px、品質0.7）
+    compressImage(e.target.result, 1200, 0.7, (compressed) => {
     const idx = receiptFiles.length;
-    receiptFiles.push({ base64: e.target.result.split(',')[1], mime: file.type });
+    receiptFiles.push({ base64: compressed.split(',')[1], mime: 'image/jpeg' });
     const container = document.getElementById('receipt-imgs');
     const wrap = document.createElement('div');
     wrap.style = 'position:relative;display:inline-block';
@@ -331,6 +366,7 @@ function addReceiptFromInput(inputId) {
     document.getElementById(inputId).value = '';
     document.getElementById('receipt-done').style.display = 'none';
     updateReceiptCount();
+    }); // compressImage
   };
   reader.readAsDataURL(file);
   }); // forEach
