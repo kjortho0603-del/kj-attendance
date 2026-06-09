@@ -307,49 +307,43 @@ function showMsg(txt, type) {
 
 let receiptFiles = [];
 
-function compressImage(file) {
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let w = img.width, h = img.height;
-        if (w > 1200) { h = Math.round(h * 1200 / w); w = 1200; }
-        canvas.width = w; canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.5);
-        resolve({ base64: dataUrl.split(',')[1], mime: 'image/jpeg', dataUrl });
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
 function addReceiptFromInput(inputId) {
   const files = document.getElementById(inputId).files;
   if (!files.length) return;
-  Array.from(files).forEach(async file => {
-    const compressed = await compressImage(file);
-    const idx = receiptFiles.length;
-    receiptFiles.push({ base64: compressed.base64, mime: compressed.mime });
-    const container = document.getElementById('receipt-imgs');
-    const wrap = document.createElement('div');
-    wrap.style = 'position:relative;display:inline-block';
-    const img = document.createElement('img');
-    img.src = compressed.dataUrl;
-    img.style = 'width:80px;height:80px;object-fit:cover;border-radius:6px;border:1px solid #e5e7eb;display:block';
-    const del = document.createElement('button');
-    del.textContent = '×';
-    del.style = 'position:absolute;top:-6px;right:-6px;background:#ef4444;color:white;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;line-height:1';
-    del.onclick = () => { receiptFiles.splice(idx, 1); wrap.remove(); updateReceiptCount(); };
-    wrap.appendChild(img);
-    wrap.appendChild(del);
-    container.appendChild(wrap);
-    document.getElementById(inputId).value = '';
-    document.getElementById('receipt-done').style.display = 'none';
-    updateReceiptCount();
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      const imgEl = new Image();
+      imgEl.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = imgEl.width, h = imgEl.height;
+        if (w > 1200) { h = Math.round(h * 1200 / w); w = 1200; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(imgEl, 0, 0, w, h);
+        const compressed = canvas.toDataURL('image/jpeg', 0.5);
+        const idx = receiptFiles.length;
+        receiptFiles.push({ base64: compressed.split(',')[1], mime: 'image/jpeg' });
+        const container = document.getElementById('receipt-imgs');
+        const wrap = document.createElement('div');
+        wrap.style = 'position:relative;display:inline-block';
+        const thumb = document.createElement('img');
+        thumb.src = compressed;
+        thumb.style = 'width:80px;height:80px;object-fit:cover;border-radius:6px;border:1px solid #e5e7eb;display:block';
+        const del = document.createElement('button');
+        del.textContent = '×';
+        del.style = 'position:absolute;top:-6px;right:-6px;background:#ef4444;color:white;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;line-height:1';
+        del.onclick = () => { receiptFiles.splice(idx, 1); wrap.remove(); updateReceiptCount(); };
+        wrap.appendChild(thumb);
+        wrap.appendChild(del);
+        container.appendChild(wrap);
+        document.getElementById(inputId).value = '';
+        document.getElementById('receipt-done').style.display = 'none';
+        updateReceiptCount();
+      };
+      imgEl.src = dataUrl;
+    };
+    reader.readAsDataURL(file);
   });
 }
 
