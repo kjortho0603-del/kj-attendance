@@ -277,35 +277,12 @@ function addEntry() {
       <button class="entry-del" onclick="delEntry(${id})">×</button>
       <div class="fg"><label>出勤日</label><input type="date" id="d-${id}" value="${dv}"></div>
       <div class="fg"><label>歯科医院</label><select id="c-${id}"><option value="">選択してください</option>${opts}</select></div>
-      <div class="fg"><div class="row2">
-        <div><label>出勤時間</label><input type="time" id="s-${id}" onchange="calcWork(${id})"></div>
-        <div><label>退勤時間</label><input type="time" id="e-${id}" onchange="calcWork(${id})"></div>
-      </div></div>
-      <div class="fg"><div class="row2">
-        <div><label>休憩（分）</label><input type="number" id="b-${id}" value="0" min="0" step="15" onchange="calcWork(${id})"></div>
-        <div><label>実働時間</label><div id="w-${id}" style="padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;background:#f9fafb;color:#9ca3af;min-height:42px;display:flex;align-items:center">—</div></div>
-      </div></div>
     </div>`);
   renum();
 }
 
 function delEntry(id) { const el = document.getElementById(`ei-${id}`); if(el) el.remove(); renum(); }
 function renum() { document.querySelectorAll('.entry-item').forEach((el,i) => el.querySelector('.entry-num').textContent = `出勤 ${i+1}`); }
-
-function calcWork(id) {
-  const s = document.getElementById(`s-${id}`).value;
-  const e = document.getElementById(`e-${id}`).value;
-  const b = parseInt(document.getElementById(`b-${id}`).value) || 0;
-  const el = document.getElementById(`w-${id}`);
-  if (!s || !e) { el.textContent = '—'; return; }
-  const [sh,sm] = s.split(':').map(Number);
-  const [eh,em] = e.split(':').map(Number);
-  const mins = (eh*60+em) - (sh*60+sm) - b;
-  if (mins <= 0) { el.textContent = '—'; el.style.color = '#9ca3af'; return; }
-  const h = Math.floor(mins/60), m = mins%60;
-  el.textContent = m > 0 ? `${h}時間${m}分` : `${h}時間`;
-  el.style.color = '#1a2744';
-}
 
 function chk() {
   const month = document.getElementById('month').value;
@@ -395,17 +372,7 @@ async function doSubmit() {
     const fmt = `${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     if (!isEditMode && seenDates.has(fmt)) { showMsg(`⚠️ ${fmt} が重複しています`, 'err'); return; }
     seenDates.add(fmt);
-    const st = document.getElementById(`s-${id}`).value;
-    const et = document.getElementById(`e-${id}`).value;
-    const bk = parseInt(document.getElementById(`b-${id}`).value) || 0;
-    let wt = '';
-    if (st && et) {
-      const [sh,sm] = st.split(':').map(Number);
-      const [eh,em] = et.split(':').map(Number);
-      const mins = (eh*60+em)-(sh*60+sm)-bk;
-      if (mins > 0) { const h=Math.floor(mins/60),m=mins%60; wt = m>0?`${h}時間${m}分`:`${h}時間`; }
-    }
-    entries.push({ date: fmt, clinic, startTime: st, endTime: et, breakMins: bk, workTime: wt });
+    entries.push({ date: fmt, clinic });
   }
 
   const btn = document.getElementById('sbtn');
@@ -490,9 +457,7 @@ function startEdit(date, clinic, startTime, endTime) {
   document.getElementById(`d-${id}`).value = `${now.getFullYear()}-${m}-${d}`;
   const cs = document.getElementById(`c-${id}`);
   for (let i = 0; i < cs.options.length; i++) { if (cs.options[i].value === clinic) { cs.selectedIndex = i; break; } }
-  if (startTime) document.getElementById(`s-${id}`).value = startTime;
-  if (endTime) document.getElementById(`e-${id}`).value = endTime;
-  if (startTime || endTime) calcWork(id);
+
   showMsg('✏️ 修正モード：内容を変えて送信してください', 'ok');
   chk();
 }
