@@ -435,12 +435,35 @@ function renderHist(history, expense, month) {
         <div class="hist-clinic">${item.clinic}</div>
         ${t ? `<div class="hist-time">⏰ ${t}</div>` : ''}
       </div>
-      <button class="hist-edit" onclick="startEdit('${item.date}','${item.clinic}','${item.startTime||''}','${item.endTime||''}')">修正</button>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <button class="hist-edit" onclick="startEdit('${item.date}','${item.clinic}','${item.startTime||''}','${item.endTime||''}')">修正</button>
+        <button class="hist-edit" style="color:#ef4444;border-color:#fca5a5" onclick="deleteEntry('${item.date}')">削除</button>
+      </div>
     </div>`;
   });
   if (expense) html += `<div class="exp-box">💴 経費：<strong>${expense}</strong></div>`;
   html += '</div>';
   el.innerHTML = html;
+}
+
+async function deleteEntry(date) {
+  if (!confirm(`${date} の出勤記録を削除しますか？`)) return;
+  const month = document.getElementById('hmonth').value;
+  try {
+    const res = await fetch(GAS, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'deleteEntry', name: MY_NAME, month, date })
+    });
+    const json = await res.json();
+    if (json.success) {
+      showMsg('🗑️ 削除しました', 'ok');
+      loadHist();
+    } else {
+      showMsg('削除に失敗しました: ' + (json.error || '不明'), 'err');
+    }
+  } catch(e) {
+    showMsg('通信エラーが発生しました', 'err');
+  }
 }
 
 function startEdit(date, clinic, startTime, endTime) {
