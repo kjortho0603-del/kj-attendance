@@ -192,6 +192,16 @@ textarea { resize: vertical; min-height: 70px; font-size: 13px; }
           <label>食事代・交通費など</label>
           <textarea id="expense" placeholder="例：食事代2000円、交通費1500円"></textarea>
         </div>
+        <div class="fg">
+          <label>領収書画像</label>
+          <input type="file" id="receipt" accept="image/*" capture="environment" onchange="previewReceipt()" style="padding:8px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;width:100%;background:white">
+          <div id="receipt-preview" style="margin-top:8px;display:none">
+            <img id="receipt-img" style="width:100%;border-radius:8px;max-height:200px;object-fit:cover">
+            <button onclick="clearReceipt()" style="margin-top:6px;background:none;border:1px solid #e5e7eb;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;color:#4b5563;font-family:inherit">✕ 削除</button>
+          </div>
+          <div id="receipt-uploading" style="display:none;font-size:12px;color:#9ca3af;margin-top:6px">アップロード中…</div>
+          <div id="receipt-done" style="display:none;font-size:12px;color:#22c55e;margin-top:6px">✅ アップロード済み</div>
+        </div>
       </div>
 
       <div id="smsg" class="msg"></div>
@@ -315,6 +325,57 @@ function showMsg(txt, type) {
   setTimeout(() => el.className = 'msg', 6000);
 }
 
+let receiptBase64 = '';
+let receiptMime = '';
+
+function previewReceipt() {
+  const file = document.getElementById('receipt').files[0];
+  if (!file) return;
+  receiptMime = file.type;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    receiptBase64 = e.target.result.split(',')[1];
+    document.getElementById('receipt-img').src = e.target.result;
+    document.getElementById('receipt-preview').style.display = 'block';
+    document.getElementById('receipt-done').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearReceipt() {
+  receiptBase64 = '';
+  receiptMime = '';
+  document.getElementById('receipt').value = '';
+  document.getElementById('receipt-preview').style.display = 'none';
+  document.getElementById('receipt-done').style.display = 'none';
+}
+
+async function uploadReceiptToGAS(month) {
+  if (!receiptBase64) return '';
+  document.getElementById('receipt-uploading').style.display = 'block';
+  try {
+    const res = await fetch(GAS, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'uploadReceipt',
+        name: MY_NAME, month,
+        date: new Date().toISOString().slice(0,10),
+        imageData: receiptBase64,
+        mimeType: receiptMime
+      })
+    });
+    const json = await res.json();
+    document.getElementById('receipt-uploading').style.display = 'none';
+    if (json.success) {
+      document.getElementById('receipt-done').style.display = 'block';
+      return json.url;
+    }
+  } catch(e) {
+    document.getElementById('receipt-uploading').style.display = 'none';
+  }
+  return '';
+}
+
 async function doSubmit() {
   const month = document.getElementById('month').value;
   const expense = document.getElementById('expense').value.trim();
@@ -350,10 +411,14 @@ async function doSubmit() {
   const btn = document.getElementById('sbtn');
   btn.disabled = true; btn.textContent = '送信中…';
 
+  // 領収書アップロード
+  const receiptUrl = await uploadReceiptToGAS(month);
+  const expenseWithReceipt = receiptUrl ? (expense ? expense + ' 領収書:' + receiptUrl : '領収書:' + receiptUrl) : expense;
+
   try {
     const res = await fetch(GAS, {
       method: 'POST',
-      body: JSON.stringify({ action: 'submitMulti', name: MY_NAME, month, entries, expense, isEdit: isEditMode })
+      body: JSON.stringify({ action: 'submitMulti', name: MY_NAME, month, entries, expense: expenseWithReceipt, isEdit: isEditMode })
     });
     const json = await res.json();
     if (json.success) {
@@ -361,6 +426,7 @@ async function doSubmit() {
       document.getElementById('expense').value = '';
       document.getElementById('entry-list').innerHTML = '';
       ec = 0; isEditMode = false;
+      clearReceipt();
       addEntry();
     } else {
       showMsg('エラー: ' + (json.error || '不明'), 'err');
