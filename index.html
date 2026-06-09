@@ -194,11 +194,10 @@ textarea { resize: vertical; min-height: 70px; font-size: 13px; }
         </div>
         <div class="fg">
           <label>領収書画像</label>
-          <input type="file" id="receipt" accept="image/*" multiple onchange="previewReceipt()" style="padding:8px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;width:100%;background:white">
-          <div id="receipt-preview" style="margin-top:8px;display:none">
-            <div id="receipt-imgs" style="display:flex;flex-wrap:wrap;gap:6px"></div>
-            <button onclick="clearReceipt()" style="margin-top:6px;background:none;border:1px solid #e5e7eb;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;color:#4b5563;font-family:inherit">✕ 全て削除</button>
-          </div>
+          <div id="receipt-imgs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"></div>
+          <input type="file" id="receipt" accept="image/*" capture="environment" onchange="addReceipt()" style="display:none">
+          <button onclick="document.getElementById('receipt').click()" style="width:100%;padding:10px;background:#f9fafb;border:1.5px dashed #e5e7eb;border-radius:8px;font-size:13px;cursor:pointer;color:#4b5563;font-family:inherit">📷 写真を追加</button>
+          <div id="receipt-count" style="font-size:11px;color:#9ca3af;margin-top:4px;display:none"></div>
           <div id="receipt-uploading" style="display:none;font-size:12px;color:#9ca3af;margin-top:6px">アップロード中…</div>
           <div id="receipt-done" style="display:none;font-size:12px;color:#22c55e;margin-top:6px">✅ アップロード済み</div>
         </div>
@@ -302,33 +301,50 @@ function showMsg(txt, type) {
   setTimeout(() => el.className = 'msg', 6000);
 }
 
-let receiptFiles = []; // [{base64, mime}]
+let receiptFiles = [];
 
-function previewReceipt() {
-  const files = document.getElementById('receipt').files;
-  if (!files.length) return;
-  receiptFiles = [];
-  const container = document.getElementById('receipt-imgs');
-  container.innerHTML = '';
-  document.getElementById('receipt-preview').style.display = 'block';
-  document.getElementById('receipt-done').style.display = 'none';
-  Array.from(files).forEach(file => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      receiptFiles.push({ base64: e.target.result.split(',')[1], mime: file.type });
-      const img = document.createElement('img');
-      img.src = e.target.result;
-      img.style = 'width:80px;height:80px;object-fit:cover;border-radius:6px;border:1px solid #e5e7eb';
-      container.appendChild(img);
-    };
-    reader.readAsDataURL(file);
-  });
+function addReceipt() {
+  const file = document.getElementById('receipt').files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const idx = receiptFiles.length;
+    receiptFiles.push({ base64: e.target.result.split(',')[1], mime: file.type });
+    const container = document.getElementById('receipt-imgs');
+    const wrap = document.createElement('div');
+    wrap.style = 'position:relative;display:inline-block';
+    const img = document.createElement('img');
+    img.src = e.target.result;
+    img.style = 'width:80px;height:80px;object-fit:cover;border-radius:6px;border:1px solid #e5e7eb;display:block';
+    const del = document.createElement('button');
+    del.textContent = '×';
+    del.style = 'position:absolute;top:-6px;right:-6px;background:#ef4444;color:white;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;line-height:1';
+    del.onclick = () => { receiptFiles.splice(idx, 1); wrap.remove(); updateReceiptCount(); };
+    wrap.appendChild(img);
+    wrap.appendChild(del);
+    container.appendChild(wrap);
+    document.getElementById('receipt').value = '';
+    document.getElementById('receipt-done').style.display = 'none';
+    updateReceiptCount();
+  };
+  reader.readAsDataURL(file);
+}
+
+function updateReceiptCount() {
+  const el = document.getElementById('receipt-count');
+  if (receiptFiles.length > 0) {
+    el.textContent = `${receiptFiles.length}枚選択済み`;
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
 }
 
 function clearReceipt() {
   receiptFiles = [];
   document.getElementById('receipt').value = '';
-  document.getElementById('receipt-preview').style.display = 'none';
+  document.getElementById('receipt-imgs').innerHTML = '';
+  document.getElementById('receipt-count').style.display = 'none';
   document.getElementById('receipt-done').style.display = 'none';
 }
 
