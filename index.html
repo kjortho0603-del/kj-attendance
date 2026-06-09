@@ -284,7 +284,7 @@
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbw5tvgBT35-laURQL_P5cfYARBR_VAfxtWfB189gWNnKMtq3FsvjoE7fMK2Ur2ByQ7f/exec';
 
 const CLINICS = [
-  '印西歯科クリニック','三郷中央歯科（水）','三郷中央歯科（土）',
+  '印西歯科クリニック','三郷中央歯科',
   'MI総合歯科クリニック','サプラファミリー歯科','ノア歯科クリニック中目黒',
   'ピースフル歯科クリニック','テラスモール松戸プランス歯科',
   '駅前おひさま歯科+キッズ','泉歯科医院'
@@ -343,11 +343,23 @@ function addEntry() {
       <div class="row-2">
         <div>
           <label>出勤時間</label>
-          <input type="time" id="start-${id}">
+          <input type="time" id="start-${id}" onchange="calcWork(${id})">
         </div>
         <div>
           <label>退勤時間</label>
-          <input type="time" id="end-${id}">
+          <input type="time" id="end-${id}" onchange="calcWork(${id})">
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="row-2">
+        <div>
+          <label>休憩（分）</label>
+          <input type="number" id="break-${id}" value="0" min="0" step="15" onchange="calcWork(${id})" style="padding:9px 12px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:13px;width:100%;font-family:inherit;color:var(--color-text-primary);background:var(--color-background-primary)">
+        </div>
+        <div>
+          <label>実働時間</label>
+          <div id="work-${id}" style="padding:9px 12px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);font-size:13px;background:var(--color-background-secondary);color:var(--color-text-secondary);min-height:38px;display:flex;align-items:center">—</div>
         </div>
       </div>
     </div>
@@ -355,6 +367,21 @@ function addEntry() {
 
   document.getElementById('entry-list').insertAdjacentHTML('beforeend', html);
   renumberEntries();
+}
+
+function calcWork(id) {
+  const s = document.getElementById(`start-${id}`).value;
+  const e = document.getElementById(`end-${id}`).value;
+  const b = parseInt(document.getElementById(`break-${id}`).value) || 0;
+  const el = document.getElementById(`work-${id}`);
+  if (!s || !e) { el.textContent = '—'; return; }
+  const [sh,sm] = s.split(':').map(Number);
+  const [eh,em] = e.split(':').map(Number);
+  let mins = (eh*60+em) - (sh*60+sm) - b;
+  if (mins <= 0) { el.textContent = '—'; el.style.color = 'var(--color-text-secondary)'; return; }
+  const h = Math.floor(mins/60), m = mins%60;
+  el.textContent = m > 0 ? `${h}時間${m}分` : `${h}時間`;
+  el.style.color = 'var(--navy)';
 }
 
 function removeEntry(id) {
