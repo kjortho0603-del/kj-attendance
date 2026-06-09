@@ -195,8 +195,12 @@ textarea { resize: vertical; min-height: 70px; font-size: 13px; }
         <div class="fg">
           <label>領収書画像</label>
           <div id="receipt-imgs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"></div>
-          <input type="file" id="receipt" accept="image/*, .jpg, .jpeg, .png, .heic" onchange="addReceipt()" style="display:none">
-          <button onclick="document.getElementById('receipt').click()" style="width:100%;padding:10px;background:#f9fafb;border:1.5px dashed #e5e7eb;border-radius:8px;font-size:13px;cursor:pointer;color:#4b5563;font-family:inherit">📷 写真を追加</button>
+          <input type="file" id="receipt-camera" accept="image/*" capture="environment" onchange="addReceiptFromInput('receipt-camera')" style="display:none">
+          <input type="file" id="receipt-library" accept="image/*" multiple onchange="addReceiptFromInput('receipt-library')" style="display:none">
+          <div style="display:flex;gap:8px">
+            <button onclick="document.getElementById('receipt-camera').click()" style="flex:1;padding:10px;background:#f9fafb;border:1.5px dashed #e5e7eb;border-radius:8px;font-size:13px;cursor:pointer;color:#4b5563;font-family:inherit">📷 カメラ</button>
+            <button onclick="document.getElementById('receipt-library').click()" style="flex:1;padding:10px;background:#f9fafb;border:1.5px dashed #e5e7eb;border-radius:8px;font-size:13px;cursor:pointer;color:#4b5563;font-family:inherit">🖼️ ライブラリ</button>
+          </div>
           <div id="receipt-count" style="font-size:11px;color:#9ca3af;margin-top:4px;display:none"></div>
           <div id="receipt-uploading" style="display:none;font-size:12px;color:#9ca3af;margin-top:6px">アップロード中…</div>
           <div id="receipt-done" style="display:none;font-size:12px;color:#22c55e;margin-top:6px">✅ アップロード済み</div>
@@ -303,9 +307,10 @@ function showMsg(txt, type) {
 
 let receiptFiles = [];
 
-function addReceipt() {
-  const file = document.getElementById('receipt').files[0];
-  if (!file) return;
+function addReceiptFromInput(inputId) {
+  const files = document.getElementById(inputId).files;
+  if (!files.length) return;
+  Array.from(files).forEach(file => {
   const reader = new FileReader();
   reader.onload = (e) => {
     const idx = receiptFiles.length;
@@ -323,11 +328,12 @@ function addReceipt() {
     wrap.appendChild(img);
     wrap.appendChild(del);
     container.appendChild(wrap);
-    document.getElementById('receipt').value = '';
+    document.getElementById(inputId).value = '';
     document.getElementById('receipt-done').style.display = 'none';
     updateReceiptCount();
   };
   reader.readAsDataURL(file);
+  }); // forEach
 }
 
 function updateReceiptCount() {
@@ -342,7 +348,8 @@ function updateReceiptCount() {
 
 function clearReceipt() {
   receiptFiles = [];
-  document.getElementById('receipt').value = '';
+  document.getElementById('receipt-camera').value = '';
+  document.getElementById('receipt-library').value = '';
   document.getElementById('receipt-imgs').innerHTML = '';
   document.getElementById('receipt-count').style.display = 'none';
   document.getElementById('receipt-done').style.display = 'none';
