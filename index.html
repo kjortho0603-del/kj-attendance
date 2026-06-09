@@ -195,7 +195,7 @@ textarea { resize: vertical; min-height: 70px; font-size: 13px; }
         <div class="fg">
           <label>領収書画像</label>
           <div id="receipt-imgs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"></div>
-          <input type="file" id="receipt" accept="image/*" onchange="addReceipt()" style="display:none">
+          <input type="file" id="receipt" accept="image/*, .jpg, .jpeg, .png, .heic" onchange="addReceipt()" style="display:none">
           <button onclick="document.getElementById('receipt').click()" style="width:100%;padding:10px;background:#f9fafb;border:1.5px dashed #e5e7eb;border-radius:8px;font-size:13px;cursor:pointer;color:#4b5563;font-family:inherit">📷 写真を追加</button>
           <div id="receipt-count" style="font-size:11px;color:#9ca3af;margin-top:4px;display:none"></div>
           <div id="receipt-uploading" style="display:none;font-size:12px;color:#9ca3af;margin-top:6px">アップロード中…</div>
